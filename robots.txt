@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shibainu8888.github.io/fileconvert-tools/sitemap.xml
