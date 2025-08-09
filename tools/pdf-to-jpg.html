@@ -1,18 +1,19 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PDF → JPG 변환</title>
   <link rel="icon" href="data:,">
-  <script defer src="https://cdn.tailwindcss.com"></script>
-  <!-- i18n 로더: tools 폴더 기준 ../assets -->
-  <script defer src="../assets/js/i18n.js"></script>
-  <!-- PDF.js 라이브러리 -->
+  <!-- Tailwind (차단 시 PicoCSS로 대체) -->
+  <script src="https://cdn.tailwindcss.com"
+          onerror="document.head.insertAdjacentHTML('beforeend','<link rel=&quot;stylesheet&quot; href=&quot;https://unpkg.com/@picocss/pico@2/css/pico.min.css&quot;>')">
+  </script>
+  <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-900">
 
+<body class="bg-gray-50 text-gray-900">
   <!-- 헤더 -->
   <header class="max-w-4xl mx-auto px-4 py-6 flex items-center justify-between">
     <a href="../" class="font-bold">PDF Tools</a>
@@ -44,8 +45,9 @@
     <a class="hover:underline" href="../terms.html" data-i18n="nav_terms">이용약관</a>
   </footer>
 
+  <!-- i18n 먼저 로드 → 즉시 init -->
+  <script src="../assets/js/i18n.js"></script>
   <script>
-    // i18n 초기화 (tools 폴더라 ../lang 사용)
     initI18n({ defaultLang: 'ko', filesPath: '../lang', selectEl: '#langSelect' });
 
     const pdfInput = document.getElementById('pdfInput');
