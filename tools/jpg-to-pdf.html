@@ -5,20 +5,20 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
   <title>JPG → PDF 변환 | PDF Tools</title>
-  <meta name="description" content="여러 JPG/PNG 이미지를 한 번에 PDF로 변환합니다. 모든 처리는 브라우저에서만 수행됩니다.">
+  <meta name="description" content="여러 JPG/PNG 이미지를 하나의 PDF로 합칩니다. 모든 처리는 브라우저에서만 수행되며 서버 업로드가 없습니다.">
   <link rel="canonical" href="https://shibainu8888.github.io/fileconvert-tools/tools/jpg-to-pdf.html" />
 
-  <!-- OG/Twitter (요약) -->
+  <!-- OG/Twitter -->
   <meta property="og:title" content="JPG → PDF 변환 | PDF Tools">
-  <meta property="og:description" content="여러 JPG/PNG 이미지를 한 번에 PDF로 변환합니다. 브라우저 처리, 업로드 없음.">
+  <meta property="og:description" content="여러 이미지를 순서대로 하나의 PDF로 변환합니다. 브라우저 처리, 업로드 없음.">
   <meta name="twitter:card" content="summary">
 
-  <!-- Favicon (절대경로) -->
+  <!-- Favicon (절대경로 고정) -->
   <link rel="icon" href="/fileconvert-tools/favicon.ico?v=10">
   <link rel="icon" type="image/png" sizes="32x32" href="/fileconvert-tools/favicon32x32.png?v=10">
   <link rel="shortcut icon" href="/fileconvert-tools/favicon.ico?v=10">
 
-  <!-- UI -->
+  <!-- UI (개발 편의용 CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- jsPDF -->
@@ -38,28 +38,42 @@
   <main class="max-w-4xl mx-auto px-4">
     <section class="bg-white p-6 rounded-2xl shadow-sm">
       <h1 class="text-2xl font-bold mb-2" data-i18n="jpg2pdf_title">JPG → PDF 변환</h1>
-      <p class="text-sm text-gray-600 mb-4" data-i18n="jpg2pdf_desc">여러 이미지를 순서대로 하나의 PDF로 변환합니다. 모든 처리는 브라우저에서만 수행됩니다.</p>
+      <p class="text-sm text-gray-600 mb-4" data-i18n="jpg2pdf_desc">
+        여러 이미지를 순서대로 하나의 PDF로 변환합니다. 모든 처리는 브라우저에서만 수행됩니다.
+      </p>
 
-     <!-- 기존 input 파일 줄을 아래로 교체 -->
-<div class="flex gap-3 items-center">
-  <input type="file" id="imgInput" accept="image/*" multiple class="hidden">
-  <label for="imgInput"
-         class="inline-block bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded cursor-pointer"
-         data-i18n="choose_files">파일 선택</label>
-  <span id="fileName" class="text-sm text-gray-600" data-i18n="no_files">선택된 파일 없음</span>
-</div>
+      <!-- 파일 선택(커스텀) -->
+      <div class="flex flex-wrap items-center gap-3">
+        <input type="file" id="imgInput" accept="image/*" multiple class="hidden">
+        <label for="imgInput"
+               class="inline-block bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded cursor-pointer"
+               data-i18n="choose_files">파일 선택</label>
+        <span id="fileName" class="text-sm text-gray-600" data-i18n="no_files">선택된 파일 없음</span>
+      </div>
 
-<div class="flex gap-3 items-center mt-3">
-  <label class="text-sm" data-i18n="page_size">페이지 크기</label>
-  <select id="pageSize" class="border rounded px-2 py-1">
-    <option value="a4" data-i18n="size_a4">A4 (기본)</option>
-    <option value="letter" data-i18n="size_letter">US Letter</option>
-  </select>
+      <!-- 옵션 -->
+      <div class="flex flex-wrap items-center gap-3 mt-4">
+        <label class="text-sm" data-i18n="page_size">페이지 크기</label>
+        <select id="pageSize" class="border rounded px-2 py-1">
+          <option value="a4" data-i18n="size_a4">A4 (기본)</option>
+          <option value="letter" data-i18n="size_letter">US Letter</option>
+        </select>
 
-  <label class="text-sm ml-4" for="landscape" data-i18n="landscape">가로 방향</label>
-  <input id="landscape" type="checkbox" class="h-4 w-4">
-</div>
+        <label class="text-sm ml-1" for="landscape" data-i18n="landscape">가로 방향</label>
+        <input id="landscape" type="checkbox" class="h-4 w-4">
+      </div>
 
+      <!-- 실행 -->
+      <button id="makePdf"
+              class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+              data-i18n="btn_make_pdf">
+        PDF 만들기
+      </button>
+
+      <div id="progress" class="text-sm text-gray-600 mt-3"></div>
+      <div class="text-xs text-gray-500 mt-1" data-i18n="jpg2pdf_hint">
+        Tip: 파일 선택 창에서 여러 이미지를 순서대로 선택하면 그 순서대로 페이지가 만들어집니다.
+      </div>
     </section>
   </main>
 
@@ -72,57 +86,27 @@
   <!-- i18n -->
   <script src="../assets/js/i18n.js"></script>
   <script>
+    // i18n 초기화 (tools 폴더이므로 ../lang)
     initI18n({ defaultLang: 'ko', filesPath: '../lang', selectEl: '#langSelect' });
 
+    // 파일명 표시
+    const fileNameEl = document.getElementById('fileName');
+    document.getElementById('imgInput').addEventListener('change', (e) => {
+      const files = [...e.target.files].map(f => f.name);
+      fileNameEl.textContent = files.length ? files.join(', ') : '선택된 파일 없음';
+    });
+
+    // JPG -> PDF
     const { jsPDF } = window.jspdf;
-    const input = document.getElementById('imgInput');
     const btn = document.getElementById('makePdf');
     const progress = document.getElementById('progress');
 
-    function mmToPt(mm){ return mm * 2.834645669; } // A4/Letter 계산용
-
-    btn.addEventListener('click', async () => {
-      if (!input.files.length) { alert('이미지 파일을 선택하세요.'); return; }
-
-      const pageSizeSel = document.getElementById('pageSize').value;
-      const landscape = document.getElementById('landscape').checked;
-
-      // 페이지 크기 계산 (pt)
-      let widthMm, heightMm;
-      if (pageSizeSel === 'letter') { widthMm = 215.9; heightMm = 279.4; } // Letter
-      else { widthMm = 210; heightMm = 297; } // A4
-      if (landscape) [widthMm, heightMm] = [heightMm, widthMm];
-
-      const pdf = new jsPDF({
-        orientation: landscape ? 'landscape' : 'portrait',
-        unit: 'pt',
-        format: [mmToPt(widthMm), mmToPt(heightMm)]
-      });
-
-      const files = Array.from(input.files);
-      progress.textContent = `0 / ${files.length}`;
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const imgUrl = await readAsDataURL(file);
-        const img = await loadImage(imgUrl);
-
-        // 이미지 비율 유지하여 페이지에 맞게 최대화
-        const pageW = pdf.internal.pageSize.getWidth();
-        const pageH = pdf.internal.pageSize.getHeight();
-        const { w, h } = fitContain(img.width, img.height, pageW, pageH);
-        const x = (pageW - w) / 2;
-        const y = (pageH - h) / 2;
-        pdf.addImage(img, 'JPEG', x, y, w, h, undefined, 'FAST');
-
-        if (i < files.length - 1) pdf.addPage();
-        progress.textContent = `${i + 1} / ${files.length}`;
-      }
-
-      pdf.save('images.pdf');
-      progress.textContent = '완료';
-    });
-
+    function mmToPt(mm){ return mm * 2.834645669; }
+    function fitContain(sw, sh, dw, dh){
+      const sr = sw / sh, dr = dw / dh;
+      if (sr > dr) return { w: dw, h: dw / sr };
+      return { w: dh * sr, h: dh };
+    }
     function readAsDataURL(file){
       return new Promise((res, rej) => {
         const r = new FileReader();
@@ -139,18 +123,49 @@
         img.src = src;
       });
     }
-    function fitContain(sw, sh, dw, dh){
-      const sr = sw / sh, dr = dw / dh;
-      if (sr > dr) return { w: dw, h: dw / sr };
-      return { w: dh * sr, h: dh };
-    }
+
+    btn.addEventListener('click', async () => {
+      const input = document.getElementById('imgInput');
+      if (!input.files.length) { alert('이미지 파일을 선택하세요.'); return; }
+
+      // 페이지 크기 계산
+      const pageSizeSel = document.getElementById('pageSize').value;
+      const landscape = document.getElementById('landscape').checked;
+      let widthMm, heightMm;
+      if (pageSizeSel === 'letter') { widthMm = 215.9; heightMm = 279.4; } // US Letter
+      else { widthMm = 210; heightMm = 297; } // A4
+      if (landscape) [widthMm, heightMm] = [heightMm, widthMm];
+
+      const pdf = new jsPDF({
+        orientation: landscape ? 'landscape' : 'portrait',
+        unit: 'pt',
+        format: [mmToPt(widthMm), mmToPt(heightMm)]
+      });
+
+      const files = Array.from(input.files);
+      progress.textContent = `0 / ${files.length}`;
+
+      for (let i = 0; i < files.length; i++) {
+        const dataUrl = await readAsDataURL(files[i]);
+        const img = await loadImage(dataUrl);
+
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const { w, h } = fitContain(img.width, img.height, pageW, pageH);
+        const x = (pageW - w) / 2;
+        const y = (pageH - h) / 2;
+
+        // 포맷(JPEG/PNG) 자동 판별
+        const isPng = /^data:image\/png/i.test(dataUrl);
+        pdf.addImage(img, isPng ? 'PNG' : 'JPEG', x, y, w, h, undefined, 'FAST');
+
+        if (i < files.length - 1) pdf.addPage();
+        progress.textContent = `${i + 1} / ${files.length}`;
+      }
+
+      pdf.save('images.pdf');
+      progress.textContent = '완료';
+    });
   </script>
-  <script>
-  const fileNameEl = document.getElementById('fileName');
-  document.getElementById('imgInput').addEventListener('change', (e) => {
-    const files = [...e.target.files].map(f => f.name);
-    fileNameEl.textContent = files.length ? files.join(', ') : (window.i18n?.t?.('no_files') || '선택된 파일 없음');
-  });
-</script>
 </body>
 </html>
