@@ -25,5 +25,11 @@
   "jpg2pdf_title": "JPG → PDF Converter",
   "jpg2pdf_desc": "Combine multiple images into a single PDF. Everything runs locally in your browser.",
   "btn_make_pdf": "Make PDF",
-  "jpg2pdf_hint": "Tip: Select images in order to generate pages in that order."
+  "jpg2pdf_hint": "Tip: Select images in order to generate pages in that order.",
+  "choose_files": "Choose Files",
+  "no_files": "No files selected",
+  "page_size": "Page Size",
+  "landscape": "Landscape",
+  "size_a4": "A4 (Default)",
+  "size_letter": "US Letter"
 }
