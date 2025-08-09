@@ -1,16 +1,19 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PDF Tools | 빠르고 안전한 PDF 변환</title>
-  <meta name="description" content="브라우저에서 바로 PDF를 변환하는 무료 도구. 업로드/저장 없음.">
+  <meta name="description" content="브라우저에서 바로 PDF를 변환하는 무료 도구. 업로드/저장 없음." />
   <link rel="icon" href="data:,">
-  <script defer src="https://cdn.tailwindcss.com"></script>
-  <!-- i18n 로더: 루트 기준 상대경로 -->
-  <script defer src="assets/js/i18n.js"></script>
+  <!-- Tailwind (차단 시 PicoCSS로 대체) -->
+  <script src="https://cdn.tailwindcss.com"
+          onerror="document.head.insertAdjacentHTML('beforeend','<link rel=&quot;stylesheet&quot; href=&quot;https://unpkg.com/@picocss/pico@2/css/pico.min.css&quot;>')">
+  </script>
 </head>
+
 <body class="bg-gray-50 text-gray-900">
+  <!-- 헤더 -->
   <header class="max-w-5xl mx-auto px-4 py-6 flex items-center justify-between">
     <a href="./" class="font-bold text-xl">PDF Tools</a>
     <select id="langSelect" class="border rounded px-2 py-1">
@@ -19,6 +22,7 @@
     </select>
   </header>
 
+  <!-- 본문 -->
   <main class="max-w-5xl mx-auto px-4">
     <section class="bg-white rounded-2xl p-8 shadow-sm">
       <h1 class="text-3xl sm:text-4xl font-bold mb-3" data-i18n="hero_title">빠르고 안전한 PDF 변환</h1>
@@ -32,20 +36,26 @@
     <section class="mt-12">
       <h2 class="text-2xl font-bold mb-3" data-i18n="feat_title">제공 기능</h2>
       <ul class="list-disc pl-6 text-gray-700">
-        <li><a class="text-blue-700 hover:underline" href="tools/pdf-to-jpg.html" data-i18n="feat_pdf2jpg">PDF → JPG 변환</a></li>
+        <li>
+          <a class="text-blue-700 hover:underline" href="tools/pdf-to-jpg.html" data-i18n="feat_pdf2jpg">
+            PDF → JPG 변환
+          </a>
+        </li>
       </ul>
     </section>
   </main>
 
+  <!-- 푸터 -->
   <footer class="max-w-5xl mx-auto px-4 py-10 text-sm text-gray-500">
     <a class="hover:underline" href="privacy.html" data-i18n="nav_privacy">개인정보</a> ·
     <a class="hover:underline" href="terms.html" data-i18n="nav_terms">이용약관</a>
     <span class="ml-2">© <span id="y"></span> PDF Tools</span>
   </footer>
 
+  <!-- i18n: 외부 스크립트를 먼저 로드한 뒤 즉시 init 호출 -->
+  <script src="assets/js/i18n.js"></script>
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
-    // lang/ko.json, lang/en.json 이 루트에 있어야 함
     initI18n({ defaultLang: 'ko', filesPath: 'lang', selectEl: '#langSelect' });
   </script>
 </body>
