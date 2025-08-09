@@ -1,80 +1,52 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PDF 툴 허브 | PDF 변환·편집 기초</title>
-<meta name="description" content="브라우저에서 바로 PDF를 변환하는 무료 도구들. 서버 업로드 없음. 빠르고 안전.">
-<link rel="icon" href="data:,">
-<script defer src="https://cdn.tailwindcss.com"></script>
-<script defer src="/assets/js/i18n.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PDF Tools | 빠르고 안전한 PDF 변환</title>
+  <meta name="description" content="브라우저에서 바로 PDF를 변환하는 무료 도구. 업로드/저장 없음.">
+  <link rel="icon" href="data:,">
+  <script defer src="https://cdn.tailwindcss.com"></script>
+  <!-- i18n 로더: 루트 기준 상대경로 -->
+  <script defer src="assets/js/i18n.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900">
   <header class="max-w-5xl mx-auto px-4 py-6 flex items-center justify-between">
-    <a href="/" class="font-bold text-xl">PDF Tools</a>
-    <div class="flex items-center gap-3">
-      <select id="langSelect" class="border rounded px-2 py-1">
-        <option value="ko">한국어</option>
-        <option value="en">English</option>
-      </select>
-      <nav class="hidden sm:flex gap-4 text-sm">
-        <a href="/privacy.html" class="hover:underline" data-i18n="nav_privacy">개인정보</a>
-        <a href="/terms.html" class="hover:underline" data-i18n="nav_terms">이용약관</a>
-      </nav>
-    </div>
+    <a href="./" class="font-bold text-xl">PDF Tools</a>
+    <select id="langSelect" class="border rounded px-2 py-1">
+      <option value="ko">한국어</option>
+      <option value="en">English</option>
+    </select>
   </header>
 
   <main class="max-w-5xl mx-auto px-4">
     <section class="bg-white rounded-2xl p-8 shadow-sm">
       <h1 class="text-3xl sm:text-4xl font-bold mb-3" data-i18n="hero_title">빠르고 안전한 PDF 변환</h1>
       <p class="text-gray-600 mb-6" data-i18n="hero_sub">브라우저에서만 처리되어 파일이 서버에 저장되지 않습니다.</p>
-      <a href="/tools/pdf-to-jpg.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-lg" data-i18n="cta_try">PDF → JPG 변환 시작</a>
+      <a href="tools/pdf-to-jpg.html"
+         class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-lg"
+         data-i18n="cta_try">PDF → JPG 변환 시작</a>
       <p class="text-xs text-gray-500 mt-2" data-i18n="cta_note">무료 · 회원가입 불필요</p>
-    </section>
-
-    <section class="mt-10 grid sm:grid-cols-3 gap-4">
-      <div class="bg-white p-5 rounded-xl shadow-sm">
-        <h3 class="font-semibold mb-1" data-i18n="card_local_title">로컬 처리</h3>
-        <p class="text-sm text-gray-600" data-i18n="card_local_desc">파일이 서버로 업로드되지 않고 브라우저에서 변환됩니다.</p>
-      </div>
-      <div class="bg-white p-5 rounded-xl shadow-sm">
-        <h3 class="font-semibold mb-1" data-i18n="card_fast_title">빠른 속도</h3>
-        <p class="text-sm text-gray-600" data-i18n="card_fast_desc">대기 없이 즉시 변환하고 바로 다운로드하세요.</p>
-      </div>
-      <div class="bg-white p-5 rounded-xl shadow-sm">
-        <h3 class="font-semibold mb-1" data-i18n="card_free_title">무료 사용</h3>
-        <p class="text-sm text-gray-600" data-i18n="card_free_desc">핵심 기능은 모두 무료로 제공됩니다.</p>
-      </div>
     </section>
 
     <section class="mt-12">
       <h2 class="text-2xl font-bold mb-3" data-i18n="feat_title">제공 기능</h2>
       <ul class="list-disc pl-6 text-gray-700">
-        <li><a class="text-blue-700 hover:underline" href="/tools/pdf-to-jpg.html" data-i18n="feat_pdf2jpg">PDF → JPG 변환</a></li>
-        <!-- 다음 기능 추가 시 여기 계속 목록화 -->
+        <li><a class="text-blue-700 hover:underline" href="tools/pdf-to-jpg.html" data-i18n="feat_pdf2jpg">PDF → JPG 변환</a></li>
       </ul>
-    </section>
-
-    <section class="mt-12 bg-white p-6 rounded-xl shadow-sm">
-      <h2 class="text-xl font-semibold mb-2" data-i18n="faq_title">자주 묻는 질문</h2>
-      <details class="mb-2">
-        <summary class="font-semibold" data-i18n="faq_q1">파일이 서버에 저장되나요?</summary>
-        <p class="text-sm text-gray-700 mt-2" data-i18n="faq_a1">아니요. 변환은 전부 브라우저에서 수행되며, 업로드/저장은 하지 않습니다.</p>
-      </details>
-      <details>
-        <summary class="font-semibold" data-i18n="faq_q2">유료인가요?</summary>
-        <p class="text-sm text-gray-700 mt-2" data-i18n="faq_a2">핵심 기능은 무료입니다. 대용량·일괄 변환 등 일부 고급 기능만 유료로 제공될 수 있습니다.</p>
-      </details>
     </section>
   </main>
 
   <footer class="max-w-5xl mx-auto px-4 py-10 text-sm text-gray-500">
-    <p>© <span id="y"></span> PDF Tools</p>
+    <a class="hover:underline" href="privacy.html" data-i18n="nav_privacy">개인정보</a> ·
+    <a class="hover:underline" href="terms.html" data-i18n="nav_terms">이용약관</a>
+    <span class="ml-2">© <span id="y"></span> PDF Tools</span>
   </footer>
 
-<script>
-  document.getElementById('y').textContent = new Date().getFullYear();
-  initI18n({ defaultLang: 'ko', filesPath: '/lang', selectEl: '#langSelect' });
-</script>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+    // lang/ko.json, lang/en.json 이 루트에 있어야 함
+    initI18n({ defaultLang: 'ko', filesPath: 'lang', selectEl: '#langSelect' });
+  </script>
 </body>
 </html>
