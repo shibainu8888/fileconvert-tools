@@ -145,5 +145,12 @@
       return { w: dh * sr, h: dh };
     }
   </script>
+  <script>
+  const fileNameEl = document.getElementById('fileName');
+  document.getElementById('imgInput').addEventListener('change', (e) => {
+    const files = [...e.target.files].map(f => f.name);
+    fileNameEl.textContent = files.length ? files.join(', ') : (window.i18n?.t?.('no_files') || '선택된 파일 없음');
+  });
+</script>
 </body>
 </html>
