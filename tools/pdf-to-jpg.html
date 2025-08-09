@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PDF → JPG 변환</title>
+<link rel="icon" href="data:,">
+<script defer src="https://cdn.tailwindcss.com"></script>
+<script defer src="/assets/js/i18n.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<header class="max-w-4xl mx-auto px-4 py-6 flex items-center justify-between">
+  <a href="/" class="font-bold">PDF Tools</a>
+  <select id="langSelect" class="border rounded px-2 py-1">
+    <option value="ko">한국어</option>
+    <option value="en">English</option>
+  </select>
+</header>
+
+<main class="max-w-4xl mx-auto px-4">
+  <section class="bg-white p-6 rounded-2xl shadow-sm">
+    <h1 class="text-2xl font-bold mb-2" data-i18n="tool_title">PDF → JPG 변환</h1>
+    <p class="text-sm text-gray-600 mb-4" data-i18n="tool_desc">브라우저에서만 처리됩니다. 파일은 서버에 저장되지 않습니다.</p>
+
+    <input type="file" id="pdfInput" accept="application/pdf" class="block">
+    <button id="convertBtn" class="mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" data-i18n="btn_convert">변환하기</button>
+
+    <div id="progress" class="text-sm text-gray-600 mt-3"></div>
+    <div id="result" class="mt-4 space-y-2"></div>
+  </section>
+</main>
+
+<footer class="max-w-4xl mx-auto px-4 py-10 text-sm text-gray-500">
+  <a class="hover:underline" href="/privacy.html" data-i18n="nav_privacy">개인정보</a> ·
+  <a class="hover:underline" href="/terms.html" data-i18n="nav_terms">이용약관</a>
+</footer>
+
+<script>
+  initI18n({ defaultLang: 'ko', filesPath: '/lang', selectEl: '#langSelect' });
+
+  const pdfInput = document.getElementById('pdfInput');
+  const convertBtn = document.getElementById('convertBtn');
+  const resultDiv = document.getElementById('result');
+  const progressEl = document.getElementById('progress');
+
+  convertBtn.addEventListener('click', async () => {
+    if (!pdfInput.files.length) { alert('PDF 파일을 선택하세요.'); return; }
+    const file = pdfInput.files[0];
+    if (file.size > 50 * 1024 * 1024) { alert('50MB 이하 파일을 권장합니다.'); return; }
+
+    resultDiv.innerHTML = "";
+    progressEl.textContent = '준비 중...';
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const typedarray = new Uint8Array(e.target.result);
+      const pdf = await pdfjsLib.getDocument(typedarray).promise;
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        progressEl.textContent = `렌더링 중... (${i}/${pdf.numPages})`;
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        await page.render({ canvasContext: context, viewport }).promise;
+
+        const imgData = canvas.toDataURL('image/jpeg');
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = `page-${i}.jpg`;
+        link.textContent = `페이지 ${i} 다운로드`;
+        link.className = "text-blue-700 hover:underline block";
+        resultDiv.appendChild(link);
+      }
+      progressEl.textContent = '완료';
+    };
+    reader.readAsArrayBuffer(file);
+  });
+</script>
+</body>
+</html>
