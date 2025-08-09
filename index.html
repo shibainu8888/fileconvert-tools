@@ -1,5 +1,60 @@
 <!doctype html>
+<html lang="ko">
+<head>
 <meta charset="utf-8">
-<title>파일 변환 도구</title>
-<h1>환영합니다!</h1>
-<p>이 페이지는 GitHub Pages를 통해 배포되었습니다.</p>
+<title>PDF → JPG 변환기</title>
+<style>
+    body { font-family: sans-serif; padding: 20px; }
+    button { padding: 10px 15px; margin-top: 10px; }
+</style>
+</head>
+<body>
+    <h1>PDF → JPG 변환</h1>
+    <input type="file" id="pdfInput" accept="application/pdf">
+    <br>
+    <button id="convertBtn">변환하기</button>
+    <div id="result"></div>
+
+    <!-- PDF.js 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+    <script>
+    const pdfInput = document.getElementById('pdfInput');
+    const convertBtn = document.getElementById('convertBtn');
+    const resultDiv = document.getElementById('result');
+
+    convertBtn.addEventListener('click', async () => {
+        if (!pdfInput.files.length) {
+            alert('PDF 파일을 선택하세요.');
+            return;
+        }
+        const file = pdfInput.files[0];
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const typedarray = new Uint8Array(e.target.result);
+            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+
+            resultDiv.innerHTML = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({ scale: 2 });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                // JPG 이미지 다운로드 링크 만들기
+                const imgData = canvas.toDataURL('image/jpeg');
+                const link = document.createElement('a');
+                link.href = imgData;
+                link.download = `page-${i}.jpg`;
+                link.textContent = `페이지 ${i} 다운로드`;
+                resultDiv.appendChild(link);
+                resultDiv.appendChild(document.createElement('br'));
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+    </script>
+</body>
+</html>
