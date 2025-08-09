@@ -21,9 +21,9 @@
   "tool_title": "PDF → JPG Converter",
   "tool_desc": "Runs in your browser only. No server storage.",
   "btn_convert": "Convert"
-  "feat_jpg2pdf": "JPG → PDF 변환",
-  "jpg2pdf_title": "JPG → PDF 변환",
-  "jpg2pdf_desc": "여러 이미지를 순서대로 하나의 PDF로 변환합니다. 모든 처리는 브라우저에서만 수행됩니다.",
-  "btn_make_pdf": "PDF 만들기",
-  "jpg2pdf_hint": "Tip: 파일 선택 창에서 여러 이미지를 순서대로 선택하면 그 순서대로 페이지가 만들어집니다."
+  "feat_jpg2pdf": "JPG → PDF Converter",
+  "jpg2pdf_title": "JPG → PDF Converter",
+  "jpg2pdf_desc": "Combine multiple images into a single PDF. Everything runs locally in your browser.",
+  "btn_make_pdf": "Make PDF",
+  "jpg2pdf_hint": "Tip: Select images in order to generate pages in that order."
 }
