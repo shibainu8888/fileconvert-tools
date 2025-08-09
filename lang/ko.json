@@ -25,5 +25,11 @@
   "jpg2pdf_title": "JPG → PDF 변환",
   "jpg2pdf_desc": "여러 이미지를 순서대로 하나의 PDF로 변환합니다. 모든 처리는 브라우저에서만 수행됩니다.",
   "btn_make_pdf": "PDF 만들기",
-  "jpg2pdf_hint": "Tip: 파일 선택 창에서 여러 이미지를 순서대로 선택하면 그 순서대로 페이지가 만들어집니다."
+  "jpg2pdf_hint": "Tip: 파일 선택 창에서 여러 이미지를 순서대로 선택하면 그 순서대로 페이지가 만들어집니다.",
+    "choose_files": "파일 선택",
+  "no_files": "선택된 파일 없음",
+  "page_size": "페이지 크기",
+  "landscape": "가로 방향",
+  "size_a4": "A4 (기본)",
+  "size_letter": "US Letter"
 }
