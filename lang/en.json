@@ -20,7 +20,7 @@
   "faq_a2": "Core features are free. Some advanced options may be paid later.",
   "tool_title": "PDF → JPG Converter",
   "tool_desc": "Runs in your browser only. No server storage.",
-  "btn_convert": "Convert"
+  "btn_convert": "Convert",
   "feat_jpg2pdf": "JPG → PDF Converter",
   "jpg2pdf_title": "JPG → PDF Converter",
   "jpg2pdf_desc": "Combine multiple images into a single PDF. Everything runs locally in your browser.",
