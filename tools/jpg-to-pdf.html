@@ -40,23 +40,26 @@
       <h1 class="text-2xl font-bold mb-2" data-i18n="jpg2pdf_title">JPG → PDF 변환</h1>
       <p class="text-sm text-gray-600 mb-4" data-i18n="jpg2pdf_desc">여러 이미지를 순서대로 하나의 PDF로 변환합니다. 모든 처리는 브라우저에서만 수행됩니다.</p>
 
-      <div class="space-y-3">
-        <input type="file" id="imgInput" accept="image/*" multiple>
-        <div class="flex gap-3 items-center">
-          <label class="text-sm">페이지 크기</label>
-          <select id="pageSize" class="border rounded px-2 py-1">
-            <option value="a4">A4 (기본)</option>
-            <option value="letter">US Letter</option>
-          </select>
-          <label class="text-sm ml-4">가로 방향</label>
-          <input id="landscape" type="checkbox" class="h-4 w-4">
-        </div>
-        <button id="makePdf" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" data-i18n="btn_make_pdf">
-          PDF 만들기
-        </button>
-        <div id="hint" class="text-xs text-gray-500" data-i18n="jpg2pdf_hint">Tip: 파일 선택 창에서 여러 이미지를 순서대로 선택하면 그 순서대로 페이지가 만들어집니다.</div>
-        <div id="progress" class="text-sm text-gray-600 mt-1"></div>
-      </div>
+     <!-- 기존 input 파일 줄을 아래로 교체 -->
+<div class="flex gap-3 items-center">
+  <input type="file" id="imgInput" accept="image/*" multiple class="hidden">
+  <label for="imgInput"
+         class="inline-block bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded cursor-pointer"
+         data-i18n="choose_files">파일 선택</label>
+  <span id="fileName" class="text-sm text-gray-600" data-i18n="no_files">선택된 파일 없음</span>
+</div>
+
+<div class="flex gap-3 items-center mt-3">
+  <label class="text-sm" data-i18n="page_size">페이지 크기</label>
+  <select id="pageSize" class="border rounded px-2 py-1">
+    <option value="a4" data-i18n="size_a4">A4 (기본)</option>
+    <option value="letter" data-i18n="size_letter">US Letter</option>
+  </select>
+
+  <label class="text-sm ml-4" for="landscape" data-i18n="landscape">가로 방향</label>
+  <input id="landscape" type="checkbox" class="h-4 w-4">
+</div>
+
     </section>
   </main>
 
