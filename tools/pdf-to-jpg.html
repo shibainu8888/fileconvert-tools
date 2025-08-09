@@ -4,36 +4,34 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <!-- SEO -->
   <title>PDF → JPG 변환 | PDF Tools</title>
-  <meta name="description" content="PDF 파일을 고화질 JPG 이미지로 변환하는 무료 온라인 도구입니다. 브라우저에서만 처리되어 파일이 서버에 저장되지 않습니다.">
+  <meta name="description" content="PDF 각 페이지를 JPG/PNG 이미지로 변환합니다. 모든 처리는 브라우저에서만 수행됩니다.">
   <link rel="canonical" href="https://shibainu8888.github.io/fileconvert-tools/tools/pdf-to-jpg.html" />
 
-  <!-- Open Graph -->
+  <!-- OG/Twitter -->
   <meta property="og:title" content="PDF → JPG 변환 | PDF Tools">
-  <meta property="og:description" content="PDF 파일을 고화질 JPG 이미지로 변환하는 무료 온라인 도구입니다. 브라우저에서만 처리되어 파일이 서버에 저장되지 않습니다.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://shibainu8888.github.io/fileconvert-tools/tools/pdf-to-jpg.html">
-
-  <!-- Twitter -->
+  <meta property="og:description" content="PDF 페이지를 이미지(JPG/PNG)로 변환. 업로드 없음, 브라우저 내 처리.">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="PDF → JPG 변환 | PDF Tools">
-  <meta name="twitter:description" content="PDF 파일을 고화질 JPG 이미지로 변환하는 무료 온라인 도구입니다. 브라우저에서만 처리되어 파일이 서버에 저장되지 않습니다.">
 
   <!-- Favicon -->
-  <link rel="icon" href="./favicon.ico?v=4">
-<link rel="shortcut icon" href="./favicon.ico?v=4">
+  <link rel="icon" href="/fileconvert-tools/favicon.ico?v=10">
+  <link rel="icon" type="image/png" sizes="32x32" href="/fileconvert-tools/favicon32x32.png?v=10">
+  <link rel="shortcut icon" href="/fileconvert-tools/favicon.ico?v=10">
 
+  <!-- UI -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-
-  <!-- Tailwind (차단 시 PicoCSS로 대체) -->
-  <script src="https://cdn.tailwindcss.com"
-          onerror="document.head.insertAdjacentHTML('beforeend','<link rel=&quot;stylesheet&quot; href=&quot;https://unpkg.com/@picocss/pico@2/css/pico.min.css&quot;>')">
+  <!-- PDF.js (worker 포함) -->
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.min.js";
   </script>
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
-</head>
 
+  <!-- Zip & Save -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+</head>
 <body class="bg-gray-50 text-gray-900">
   <!-- 헤더 -->
   <header class="max-w-4xl mx-auto px-4 py-6 flex items-center justify-between">
@@ -44,19 +42,62 @@
     </select>
   </header>
 
-  <!-- 메인 -->
+  <!-- 본문 -->
   <main class="max-w-4xl mx-auto px-4">
     <section class="bg-white p-6 rounded-2xl shadow-sm">
-      <h1 class="text-2xl font-bold mb-2" data-i18n="tool_title">PDF → JPG 변환</h1>
-      <p class="text-sm text-gray-600 mb-4" data-i18n="tool_desc">브라우저에서만 처리됩니다. 파일은 서버에 저장되지 않습니다.</p>
+      <h1 class="text-2xl font-bold mb-2" data-i18n="pdf2jpg_title">PDF → JPG 변환</h1>
+      <p class="text-sm text-gray-600 mb-4" data-i18n="pdf2jpg_desc">
+        PDF의 각 페이지를 이미지(JPG/PNG)로 변환합니다. 모든 처리는 브라우저에서만 수행됩니다.
+      </p>
 
-      <input type="file" id="pdfInput" accept="application/pdf" class="block">
-      <button id="convertBtn"
-        class="mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        data-i18n="btn_convert">변환하기</button>
+      <!-- 파일 선택 -->
+      <div class="flex flex-wrap gap-3 items-center">
+        <input type="file" id="pdfInput" accept="application/pdf" class="hidden">
+        <label for="pdfInput"
+               class="inline-block bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded cursor-pointer"
+               data-i18n="choose_pdf">PDF 선택</label>
+        <span id="pdfName" class="text-sm text-gray-600" data-i18n="no_file">선택된 파일 없음</span>
+      </div>
 
+      <!-- 옵션 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div class="flex items-center gap-2">
+          <label class="text-sm w-28" data-i18n="img_format">이미지 형식</label>
+          <select id="imgFormat" class="border rounded px-2 py-1">
+            <option value="jpeg">JPG</option>
+            <option value="png">PNG</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-sm w-28" data-i18n="quality">품질(JPG)</label>
+          <input id="quality" type="range" min="50" max="100" step="5" value="90" class="w-40">
+          <span id="qVal" class="text-sm">90</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-sm w-28" data-i18n="resolution">해상도</label>
+          <select id="scale" class="border rounded px-2 py-1">
+            <option value="1.5">보통</option>
+            <option value="2">높음</option>
+            <option value="3">매우 높음</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-sm w-28" data-i18n="page_range">페이지 범위</label>
+          <input id="range" type="text" class="border rounded px-2 py-1 w-40" placeholder="예: 1-3,5">
+        </div>
+      </div>
+
+      <!-- 실행 -->
+      <div class="mt-4 flex gap-3">
+        <button id="convert" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                data-i18n="btn_convert">변환하기</button>
+        <button id="downloadAll" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-gray-800"
+                data-i18n="btn_download_zip" disabled>모두 ZIP으로 받기</button>
+      </div>
+
+      <!-- 진행/출력 -->
       <div id="progress" class="text-sm text-gray-600 mt-3"></div>
-      <div id="result" class="mt-4 space-y-2"></div>
+      <div id="thumbs" class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4"></div>
     </section>
   </main>
 
@@ -66,56 +107,110 @@
     <a class="hover:underline" href="../terms.html" data-i18n="nav_terms">이용약관</a>
   </footer>
 
-  <!-- i18n 먼저 로드 → 즉시 init -->
+  <!-- i18n -->
   <script src="../assets/js/i18n.js"></script>
+
   <script>
+    // i18n 초기화
     initI18n({ defaultLang: 'ko', filesPath: '../lang', selectEl: '#langSelect' });
 
-    const pdfInput = document.getElementById('pdfInput');
-    const convertBtn = document.getElementById('convertBtn');
-    const resultDiv = document.getElementById('result');
-    const progressEl = document.getElementById('progress');
+    // UI DOM
+    const input = document.getElementById('pdfInput');
+    const nameEl = document.getElementById('pdfName');
+    const convertBtn = document.getElementById('convert');
+    const downloadBtn = document.getElementById('downloadAll');
+    const thumbs = document.getElementById('thumbs');
+    const progress = document.getElementById('progress');
+    const quality = document.getElementById('quality');
+    const qVal = document.getElementById('qVal');
+    const imgFormat = document.getElementById('imgFormat');
+    const scaleSel = document.getElementById('scale');
+    const rangeInput = document.getElementById('range');
 
-    convertBtn.addEventListener('click', async () => {
-      if (!pdfInput.files.length) {
-        alert('PDF 파일을 선택하세요.');
-        return;
-      }
-      const file = pdfInput.files[0];
-      if (file.size > 50 * 1024 * 1024) {
-        alert('50MB 이하 파일을 권장합니다.');
-        return;
-      }
+    quality.addEventListener('input', () => qVal.textContent = quality.value);
 
-      resultDiv.innerHTML = "";
-      progressEl.textContent = '준비 중...';
+    // 파일명 표시
+    input.addEventListener('change', e => {
+      const file = e.target.files[0];
+      nameEl.textContent = file ? file.name : (window.i18n?.t?.('no_file') || '선택된 파일 없음');
+    });
 
-      const reader = new FileReader();
-      reader.onload = async function (e) {
-        const typedarray = new Uint8Array(e.target.result);
-        const pdf = await pdfjsLib.getDocument(typedarray).promise;
-
-        for (let i = 1; i <= pdf.numPages; i++) {
-          progressEl.textContent = `렌더링 중... (${i}/${pdf.numPages})`;
-          const page = await pdf.getPage(i);
-          const viewport = page.getViewport({ scale: 2 });
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-          await page.render({ canvasContext: context, viewport }).promise;
-
-          const imgData = canvas.toDataURL('image/jpeg');
-          const link = document.createElement('a');
-          link.href = imgData;
-          link.download = `page-${i}.jpg`;
-          link.textContent = `페이지 ${i} 다운로드`;
-          link.className = "text-blue-700 hover:underline block";
-          resultDiv.appendChild(link);
+    // 범위 파서: "1-3,5" -> [1,2,3,5]
+    function parseRange(text, total) {
+      if (!text) return Array.from({length: total}, (_,i)=>i+1);
+      const set = new Set();
+      text.split(',').forEach(part => {
+        const [a,b] = part.split('-').map(n => parseInt(n,10));
+        if (!isNaN(a) && !isNaN(b)) {
+          const s = Math.min(a,b), e = Math.max(a,b);
+          for (let i=s;i<=e;i++) if (i>=1 && i<=total) set.add(i);
+        } else if (!isNaN(a)) {
+          if (a>=1 && a<=total) set.add(a);
         }
-        progressEl.textContent = '완료';
+      });
+      return [...set].sort((x,y)=>x-y);
+    }
+
+    // 메인 변환
+    convertBtn.addEventListener('click', async () => {
+      if (!input.files[0]) { alert(window.i18n?.t?.('alert_select_pdf') || 'PDF 파일을 선택하세요.'); return; }
+
+      // 초기화
+      thumbs.innerHTML = '';
+      progress.textContent = '';
+      downloadBtn.disabled = true;
+
+      const file = input.files[0];
+      const arrayBuf = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
+      const total = pdf.numPages;
+
+      const wantedPages = parseRange(rangeInput.value.trim(), total);
+      const zip = new JSZip();
+      const ext = imgFormat.value === 'png' ? 'png' : 'jpg';
+      const jpgQuality = Math.min(1, Math.max(0.5, Number(quality.value)/100));
+      const scale = Number(scaleSel.value);
+
+      for (let idx=0; idx<wantedPages.length; idx++) {
+        const pageNum = wantedPages[idx];
+        progress.textContent = `${idx+1}/${wantedPages.length} (page ${pageNum})`;
+
+        const page = await pdf.getPage(pageNum);
+        const viewport = page.getViewport({ scale });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        canvas.width = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
+
+        await page.render({ canvasContext: ctx, viewport }).promise;
+
+        const dataUrl = ext === 'png'
+          ? canvas.toDataURL('image/png')
+          : canvas.toDataURL('image/jpeg', jpgQuality);
+
+        // 썸네일 출력
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `${file.name.replace(/\.pdf$/i,'')}_p${pageNum}.${ext}`;
+        a.className = 'block border rounded overflow-hidden shadow-sm';
+        a.title = `p${pageNum}`;
+        a.innerHTML = `<img class="w-full block" src="${dataUrl}" alt="p${pageNum}">`;
+        thumbs.appendChild(a);
+
+        // zip에 추가 (base64 제거)
+        zip.file(`${file.name.replace(/\.pdf$/i,'')}_p${pageNum}.${ext}`, dataUrl.split(',')[1], {base64: true});
+      }
+
+      // ZIP 다운로드 버튼 활성화
+      downloadBtn.disabled = false;
+      downloadBtn.onclick = async () => {
+        progress.textContent = window.i18n?.t?.('zipping') || 'ZIP 생성 중...';
+        const blob = await zip.generateAsync({type: 'blob'});
+        saveAs(blob, `${file.name.replace(/\.pdf$/i,'')}_images.zip`);
+        progress.textContent = window.i18n?.t?.('done') || '완료';
       };
-      reader.readAsArrayBuffer(file);
+
+      progress.textContent = window.i18n?.t?.('ready_to_download') || '이미지 준비 완료. 각 썸네일을 눌러 저장하거나 ZIP으로 받으세요.';
     });
   </script>
 </body>
